@@ -77,7 +77,7 @@ HuePat.VoxIR.Util.Geometry.Mesh mesh = reader.ReadMesh("path/to/MeshFile.ply");
 The X and Z axis are horizontal and do not need to be aligned with the building geometry in a Manhattan-World way.
 If your triangle mesh does not conform to this coordinate system definition, you need to rotate it before applying VoxIR
 (See the implementation of the Matterport3DReader for an example of how to do this):
-```
+```cs
 mesh = HuePat.VoxIR.IO.Matterport3D.Matterport3DReader.LoadHouse("path/to/Matterport3DHouse.ply");
 ```
 
