@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>HuePat.VoxIR.Util</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenCvSharp4" Version="4.5.3.20210817" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.5.3.20210817" />
+    <PackageReference Include="OpenTK" Version="4.6.7" />
+  </ItemGroup>
+
+</Project>

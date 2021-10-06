@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir", "voxir\voxir.csproj", "{43FD0C48-6308-47C9-A504-832C1A1ABBA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir-lib", "voxir-lib\voxir-lib.csproj", "{8FA6E658-3B21-4D50-843D-181CDAB3B66B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir-datasets", "voxir-datasets\voxir-datasets.csproj", "{8EE25158-0A2B-46DC-B90C-1CACE87E7B67}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir-util", "voxir-util\voxir-util.csproj", "{E352CB81-9B68-446C-8D26-7B27ACDB4DC9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir-io", "voxir-io\voxir-io.csproj", "{984D4866-1C8A-4257-BF87-228AC4262DC8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir-definitions", "voxir-definitions\voxir-definitions.csproj", "{355E4B41-FD69-48DA-BBBA-00320A8E97DB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "voxir-evaluation", "voxir-evaluation\voxir-evaluation.csproj", "{1E95966B-BB53-4583-AB8F-6C8CB985B8AE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{43FD0C48-6308-47C9-A504-832C1A1ABBA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43FD0C48-6308-47C9-A504-832C1A1ABBA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43FD0C48-6308-47C9-A504-832C1A1ABBA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43FD0C48-6308-47C9-A504-832C1A1ABBA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FA6E658-3B21-4D50-843D-181CDAB3B66B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FA6E658-3B21-4D50-843D-181CDAB3B66B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FA6E658-3B21-4D50-843D-181CDAB3B66B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FA6E658-3B21-4D50-843D-181CDAB3B66B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EE25158-0A2B-46DC-B90C-1CACE87E7B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EE25158-0A2B-46DC-B90C-1CACE87E7B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EE25158-0A2B-46DC-B90C-1CACE87E7B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EE25158-0A2B-46DC-B90C-1CACE87E7B67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E352CB81-9B68-446C-8D26-7B27ACDB4DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E352CB81-9B68-446C-8D26-7B27ACDB4DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E352CB81-9B68-446C-8D26-7B27ACDB4DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E352CB81-9B68-446C-8D26-7B27ACDB4DC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{984D4866-1C8A-4257-BF87-228AC4262DC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{984D4866-1C8A-4257-BF87-228AC4262DC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{984D4866-1C8A-4257-BF87-228AC4262DC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{984D4866-1C8A-4257-BF87-228AC4262DC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{355E4B41-FD69-48DA-BBBA-00320A8E97DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{355E4B41-FD69-48DA-BBBA-00320A8E97DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{355E4B41-FD69-48DA-BBBA-00320A8E97DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{355E4B41-FD69-48DA-BBBA-00320A8E97DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E95966B-BB53-4583-AB8F-6C8CB985B8AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E95966B-BB53-4583-AB8F-6C8CB985B8AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E95966B-BB53-4583-AB8F-6C8CB985B8AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E95966B-BB53-4583-AB8F-6C8CB985B8AE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4EE02C7-9458-4CA6-AB4E-08D1BFA65DF0}
+	EndGlobalSection
+EndGlobal

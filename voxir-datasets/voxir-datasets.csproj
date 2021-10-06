@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>HuePat.VoxIR.Datasets</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTK" Version="4.6.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\voxir-io\voxir-io.csproj" />
+    <ProjectReference Include="..\voxir-util\voxir-util.csproj" />
+  </ItemGroup>
+
+</Project>
