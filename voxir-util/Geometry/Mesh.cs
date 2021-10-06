@@ -6,6 +6,35 @@ using System.Threading.Tasks;
 
 namespace HuePat.VoxIR.Util.Geometry {
     public class Mesh: IReadOnlyList<Face>, IFiniteGeometry {
+        public static Mesh Merge(IList<Mesh> meshes) {
+
+            int offset = 0;
+            List<Point> vertices;
+            List<Face> faces = new List<Face>();
+
+            vertices = meshes
+                .SelectMany(mesh => mesh.Vertices)
+                .ToList();
+
+            foreach (Mesh mesh in meshes) {
+
+                faces.AddRange(
+                    mesh.Select(face => {
+                        return new Face(
+                            face.VertexIndex1 + offset,
+                            face.VertexIndex2 + offset,
+                            face.VertexIndex3 + offset,
+                            vertices);
+                    }));
+
+                offset += mesh.Vertices.Count;
+            }
+
+            return new Mesh(
+                vertices,
+                faces);
+        }
+
         private readonly Face[] faces;
 
         public PointCloud Vertices { get; private set; }
