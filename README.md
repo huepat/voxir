@@ -14,6 +14,8 @@ This repository contains the code for the publication:
 Along with the code, four triangle meshes of different building environments captured with the Microsoft HoloLens (version 1) are published along with manually constructed ground truth data.
 The datasets are attached as zip file to the release section ([direct link](https://github.com/huepat/voxir/releases/download/v1.0/VoxIR_Datasets.zip))
 
+Please cite the paper if you are using VoxIR in the context of scientific publication.
+
 Best regards
 
 Patrick Hübner
@@ -188,7 +190,7 @@ HuePat.VoxIR.IO.Visualization.Visualizer.VisualizeVoxelClassificationAsPLY(
 
 (Colors refer to voxel class values aggregated for all room ids per voxel)
 
-**Note**: The method above used ``HuePat.VoxIR.IO.Visualization.GridFrameVoxelMesher`` which generates cubes of 1m^3 centered at grid coordinates ``(r, c, -i)`` in meter (This causes the z-Axis to point upwards with respect to the building geometry which is well-suited for viewing in prevalent PLY viewers).
+**Note**: The method above used ``HuePat.VoxIR.IO.Visualization.GridFrameVoxelMesher`` which generates cubes of 1m<sup>3</sup> centered at grid coordinates ``(r, c, -i)`` in meter (This causes the z-Axis to point upwards with respect to the building geometry which is well-suited for viewing in prevalent PLY viewers).
 If you want to overlay the grid visualization with the input triangle mesh, use:
 ```cs
 HuePat.VoxIR.IO.Visualization.Visualizer.VisualizeVoxelClassificationAsPLY(
