@@ -14,7 +14,7 @@ This repository contains the code for the publication:
 Along with the code, four triangle meshes of different building environments captured with the Microsoft HoloLens (version 1) are published along with manually constructed ground truth data.
 The datasets are attached as zip file to the release section ([direct link](https://github.com/huepat/voxir/releases/download/v1.0/VoxIR_Datasets.zip))
 
-Please cite the paper if you are using VoxIR in the context of scientific publication.
+Please cite the paper if you are using VoxIR in the context of a scientific publication.
 
 Best regards
 
@@ -25,11 +25,11 @@ Patrick Hübner
 
 The Visual Studio Solution in this repository contains multiple class library projects:
 - **voxir-lib**: The actual voxel-based indoor reconstruction procedure
- outputting a voxel grid of type int[,,][] for Input of Type HuePat.VoxIR.Util.Geometry.Mesh
+ outputting a voxel grid of type ``int[,,][]`` for input of type ``HuePat.VoxIR.Util.Geometry.Mesh``
 - **voxir-definitions**: global definitions used in all the other class libraries
 - **voxir-util**: utility methods used in the other class libraries for
-    - Handling of triangle meshes (HuePat.VoxIR.Util.Geometry)
-    - Handling of the reconstruction voxel grid (HuePat.VoxIR.Util.Grid)
+    - Handling of triangle meshes (``HuePat.VoxIR.Util.Geometry``)
+    - Handling of the reconstruction voxel grid (``HuePat.VoxIR.Util.Grid``)
 - **voxir-io**: IO methods for
     - Reading input triangle meshes (as PLY)
     - Visualizing triangle meshes and reconstruction results (as PLY or images)
@@ -76,7 +76,7 @@ HuePat.VoxIR.Util.Geometry.Mesh mesh = reader.ReadMesh("path/to/MeshFile.ply");
 **Note**: VoxIR expects triangle meshes to be in a coordinate system where the Y-Axis points downwards (with respect to the represented building geometry).
 The X and Z axis are horizontal and do not need to be aligned with the building geometry in a Manhattan-World way.
 If your triangle mesh does not conform to this coordinate system definition, you need to rotate it before applying VoxIR
-(See the implementation of the Matterport3DReader for an example of how to do this):
+(See the implementation of the ``Matterport3DReader`` for an example of how to do this):
 ```cs
 mesh = HuePat.VoxIR.IO.Matterport3D.Matterport3DReader.LoadHouse("path/to/Matterport3DHouse.ply");
 ```
@@ -118,7 +118,7 @@ int[] roomIds = voxelState.GetRoomIds();
 ```
 
 **Note**: Negative room ids signalize transition spaces, positive room ids signify rooms.
-Ramp spaces as a special type of room are listed in the output parameter rampSpaceIds (See above).
+Ramp spaces as a special type of room are listed in the output parameter ``rampSpaceIds`` (See above).
 Resulting room ids are not consecutive (1, 2, 3, ...) as initial rooms get merged during space partitioning.
 Furthermore, room ids are not identical between multiple applications of VoxIR due to parallelized operations.
 The space partitioning results are however always the same, only the room ids can change.
@@ -433,6 +433,6 @@ Evaluation.Evaluation.Evaluate(
 ```
 
 **Note**: During refactoring for the publication of VoxIR, some changes were made to the code.
-furthermore, the alignment of the datasets with their respective coordinate systems has since changed (see Hübner, P.; Weinmann, M.; Wursthorn, S. & Hinz, S. 2021. Pose Normalization of Partially Manhattan World Conform Indoor Mapping Point Clouds and Triangle Meshes arXiv:2107.07778, 1-39).
+furthermore, the alignment of the datasets with their respective coordinate systems has since changed (see Hübner, P.; Weinmann, M.; Wursthorn, S. & Hinz, S. 2021. Pose Normalization of Indoor Mapping Datasets Partially Compliant to the Manhattan World Assumption arXiv:2107.07778, 1-39, https://arxiv.org/abs/2107.07778).
 The evaluation results attained with the method above are thus not identical to the tables in the paper.
 They are however overall in a range comparable to the published results.
