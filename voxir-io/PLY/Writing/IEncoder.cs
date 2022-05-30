@@ -1,5 +1,6 @@
 ﻿using HuePat.VoxIR.Util.Geometry;
 using System;
+using System.Collections.Generic;
 
 namespace HuePat.VoxIR.IO.PLY.Writing {
     public interface IEncoder : IDisposable {
@@ -7,7 +8,8 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
 
         void Encode(
             Point point,
-            Color color);
+            Color color,
+            IList<float>? additionalFloatProperties = null);
 
         void Encode(
             int offset,

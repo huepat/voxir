@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HuePat.VoxIR.Util.Grid {
     public static class Voxelizer {
-        public static int[,,][] InitializeGrid(
+        public static (int, int, int) DetermineGridSize(
                 double resolution,
                 ref AABox gridExtent) {
 
@@ -16,11 +16,41 @@ namespace HuePat.VoxIR.Util.Grid {
                 gridExtent.Min - new Vector3d(resolution),
                 gridExtent.Max + new Vector3d(resolution));
 
-            return new int[
+            return (
                 (int)((gridExtent.Max.Y - gridExtent.Min.Y) / resolution).Ceil(),
                 (int)((gridExtent.Max.X - gridExtent.Min.X) / resolution).Ceil(),
                 (int)((gridExtent.Max.Z - gridExtent.Min.Z) / resolution).Ceil()
-            ][];
+            );
+        }
+
+        public static bool[,,] VoxelizePointCloud(
+                double resolution,
+                (int, int, int) gridSize,
+                Vector3d offset,
+                PointCloud pointCloud) {
+
+            bool[,,] grid = new bool[
+                gridSize.Item1,
+                gridSize.Item2,
+                gridSize.Item3];
+
+            Parallel.For(
+                0,
+                pointCloud.Count,
+                j => {
+
+                    (int, int, int) voxel = ToVoxel(
+                        resolution,
+                        offset,
+                        pointCloud[j]);
+
+                    grid[
+                        voxel.Item1,
+                        voxel.Item2,
+                        voxel.Item3] = true;
+                });
+
+            return grid;
         }
 
         public static void VoxelizeMesh(
@@ -87,6 +117,35 @@ namespace HuePat.VoxIR.Util.Grid {
                 fusionCallback);
         }
 
+        private static (int, int, int) ToVoxel(
+                double resolution,
+                Vector3d offset,
+                Point point) {
+
+            (double, double, double) gridCoordinate = ToGridCoordinate(
+                resolution,
+                point.Position,
+                offset);
+
+            return (
+                (int)gridCoordinate.Item1,
+                (int)gridCoordinate.Item2,
+                (int)gridCoordinate.Item3
+            );
+        }
+
+        private static (double, double, double) ToGridCoordinate(
+                double resolution,
+                Vector3d coordinate,
+                Vector3d offset) {
+
+            return (
+                (coordinate.Y - offset.Y) / resolution,
+                (coordinate.X - offset.X) / resolution,
+                (coordinate.Z - offset.Z) / resolution
+            );
+        }
+
         private static void VoxelizeTriangle(
                 double resolution,
                 int[] gridSize,
@@ -148,31 +207,30 @@ namespace HuePat.VoxIR.Util.Grid {
         }
 
         private static int[] ToGridCoordinate(
-                this Vector3d position,
+                this Vector3d coordinate,
                 bool isMin,
                 double resolution,
                 int[] gridSize,
                 Vector3d offset) {
 
             int[] result;
-            double[] gridCoordinate = new double[] {
-                (position.Y - offset.Y) / resolution,
-                (position.X - offset.X) / resolution,
-                (position.Z - offset.Z) / resolution
-            };
+            (double, double, double) gridCoordinate = ToGridCoordinate(
+                resolution,
+                coordinate,
+                offset);
 
             if (isMin) {
                 result = new int[] {
-                    (int)gridCoordinate[0].Floor(),
-                    (int)gridCoordinate[1].Floor(),
-                    (int)gridCoordinate[2].Floor()
+                    (int)gridCoordinate.Item1.Floor(),
+                    (int)gridCoordinate.Item2.Floor(),
+                    (int)gridCoordinate.Item3.Floor()
                 };
             }
             else {
                 result = new int[] {
-                    (int)gridCoordinate[0].Ceil(),
-                    (int)gridCoordinate[1].Ceil(),
-                    (int)gridCoordinate[2].Ceil()
+                    (int)gridCoordinate.Item1.Ceil(),
+                    (int)gridCoordinate.Item2.Ceil(),
+                    (int)gridCoordinate.Item3.Ceil()
                 };
             }
 

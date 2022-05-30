@@ -43,7 +43,8 @@ namespace HuePat.VoxIR.CeilingAndFloorReconstruction {
                             break;
                         }
 
-                        if (normalGrid[i, r2, c2] == NormalGridValues.NORMAL_UP) {
+                        if (normalGrid[i, r2, c2] == NormalGridValues.NORMAL_UP
+                                || normalGrid[i, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN) {
                             found = true;
                             floorGrid[r, c] = PixelState.CreatePixelState(
                                 PixelClassValues.ROOM,

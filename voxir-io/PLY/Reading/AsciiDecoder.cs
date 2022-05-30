@@ -7,8 +7,33 @@ using System.Linq;
 
 namespace HuePat.VoxIR.IO.PLY.Reading {
     class AsciiDecoder : IDecoder {
+
+        public List<Point> ReadPoints(
+                string file,
+                Header header) {
+
+            List<Point> points = new List<Point>();
+
+            ReadLines(
+                header.HeaderLineCount,
+                header.HeaderLineCount + header.VertexSection.Count,
+                file,
+                line => {
+
+                    points.Add(
+                        new Point(
+                            ParseVector3d(
+                                header.VertexSection.CoordinateIndices,
+                                SplitValues(line))));
+                });
+
+            return points;
+        }
+
         public Mesh ReadMesh(
                 bool switchNormals,
+                bool createBBox,
+                bool useParallelForBBox,
                 string file, 
                 Header header) {
 
@@ -44,30 +69,8 @@ namespace HuePat.VoxIR.IO.PLY.Reading {
             return new Mesh(
                 vertices, 
                 faces,
-                true,
-                true);
-        }
-
-        private List<Point> ReadPoints(
-                string file,
-                Header header) {
-
-            List<Point> points = new List<Point>();
-
-            ReadLines(
-                header.HeaderLineCount,
-                header.HeaderLineCount + header.VertexSection.Count,
-                file,
-                line => {
-
-                    points.Add(
-                        new Point(
-                            ParseVector3d(
-                                header.VertexSection.CoordinateIndices,
-                                SplitValues(line))));
-                });
-
-            return points;
+                createBBox,
+                useParallelForBBox);
         }
 
         private static void ReadLines(

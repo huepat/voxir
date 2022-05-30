@@ -8,6 +8,7 @@ namespace HuePat.VoxIR.DataPreparation {
         private const int DIRECTION_DOWN_NORMAL_COUNTER_INDEX = 0;
         private const int DIRECTION_UP_NORMAL_COUNTER_INDEX = 1;
         private const int DIRECTION_ELSE_NORMAL_COUNTER_INDEX = 2;
+        private const double DIRECTION_UP_AND_DOWN_MIN_FRACTION = 0.3;
         public static readonly Vector3d DIRECTION_DOWN = new Vector3d(0, -1, 0);
         public static readonly Vector3d DIRECTION_UP = new Vector3d(0, 1, 0);
 
@@ -16,15 +17,21 @@ namespace HuePat.VoxIR.DataPreparation {
                 AABox gridExtent,
                 Mesh mesh) {
 
+            (int, int, int) gridSize;
             int[,,][] normalCounterGrid;
 
             if (gridExtent == null) {
                 gridExtent = mesh.BBox;
             }
 
-            normalCounterGrid = Voxelizer.InitializeGrid(
+            gridSize = Voxelizer.DetermineGridSize(
                 resolution,
                 ref gridExtent);
+
+            normalCounterGrid = new int[
+                gridSize.Item1,
+                gridSize.Item2,
+                gridSize.Item3][];
 
             Voxelizer.VoxelizeMesh(
                 resolution,
@@ -81,6 +88,7 @@ namespace HuePat.VoxIR.DataPreparation {
 
                     for (i = 0; i < normalGrid.GetLength(0); i++) {
                         for (r = 0; r < normalGrid.GetLength(1); r++) {
+
                             normalGrid[i, r, c] = normalCounterGrid[i, r, c].ToByte();
                         }
                     }
@@ -92,19 +100,31 @@ namespace HuePat.VoxIR.DataPreparation {
         private static byte ToByte(
                 this int[] normalCounterValue) {
 
+            double sum;
+
             if (normalCounterValue == null) {
                 return NormalGridValues.EMPTY;
             }
-            else if (normalCounterValue[DIRECTION_ELSE_NORMAL_COUNTER_INDEX] >= normalCounterValue[DIRECTION_DOWN_NORMAL_COUNTER_INDEX]
+
+            if (normalCounterValue[DIRECTION_ELSE_NORMAL_COUNTER_INDEX] >= normalCounterValue[DIRECTION_DOWN_NORMAL_COUNTER_INDEX]
                     && normalCounterValue[DIRECTION_ELSE_NORMAL_COUNTER_INDEX] >= normalCounterValue[DIRECTION_UP_NORMAL_COUNTER_INDEX]) {
                 return NormalGridValues.NORMAL_HORIZONTAL;
             }
-            else if (normalCounterValue[DIRECTION_DOWN_NORMAL_COUNTER_INDEX] >= normalCounterValue[DIRECTION_UP_NORMAL_COUNTER_INDEX]) {
+
+            sum = normalCounterValue[DIRECTION_ELSE_NORMAL_COUNTER_INDEX]
+                + normalCounterValue[DIRECTION_UP_NORMAL_COUNTER_INDEX]
+                + normalCounterValue[DIRECTION_DOWN_NORMAL_COUNTER_INDEX];
+
+            if (normalCounterValue[DIRECTION_UP_NORMAL_COUNTER_INDEX] / sum >= DIRECTION_UP_AND_DOWN_MIN_FRACTION
+                    && normalCounterValue[DIRECTION_DOWN_NORMAL_COUNTER_INDEX] / sum >= DIRECTION_UP_AND_DOWN_MIN_FRACTION) {
+                return NormalGridValues.NORMAL_UP_AND_DOWN;
+            }
+
+            if (normalCounterValue[DIRECTION_DOWN_NORMAL_COUNTER_INDEX] >= normalCounterValue[DIRECTION_UP_NORMAL_COUNTER_INDEX]) {
                 return NormalGridValues.NORMAL_DOWN;
             }
-            else {
-                return NormalGridValues.NORMAL_UP;
-            }
+
+            return NormalGridValues.NORMAL_UP;
         }
     }
 }

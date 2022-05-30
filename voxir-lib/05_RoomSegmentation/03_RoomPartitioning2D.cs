@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using HuePat.VoxIR.Util.Grid;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HuePat.VoxIR.RoomSegmentation {
     public static class RoomPartitioning2D {
 
-        private static readonly double SQRT_2 = 2.0.Sqrt();
         private const double RAD_ANGLE_360_DEGREE = 2.0 * System.Math.PI;
         private const double RAD_ANGLE_22_5_DEGREE = 22.5 * System.Math.PI / 180.0;
         private const double RAD_ANGLE_67_5_DEGREE = 67.5 * System.Math.PI / 180.0;
@@ -848,7 +848,11 @@ namespace HuePat.VoxIR.RoomSegmentation {
             (int, int) minDistancePixel = (-1, -1);
 
             foreach ((int, int) roomPixel in segment) {
-                distance = GetDistance(roomPixel, pixel);
+
+                distance = PixelUtils.GetDistance(
+                    roomPixel, 
+                    pixel);
+
                 if (distance < minDistance) {
                     minDistance = distance;
                     minDistancePixel = roomPixel;
@@ -856,21 +860,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
             }
 
             return minDistancePixel;
-        }
-
-        private static double GetDistance(
-                (int, int) pixel1,
-                (int, int) pixel2) {
-
-            (int, int) distance = (
-                (pixel1.Item1 - pixel2.Item1).Abs(),
-                (pixel1.Item2 - pixel2.Item2).Abs());
-
-            return SQRT_2
-                    * (distance.Item1 < distance.Item2 ?
-                        distance.Item1 :
-                        distance.Item2)
-                + (distance.Item1 - distance.Item2).Abs();
         }
 
         private static double GetAngle(

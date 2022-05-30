@@ -23,11 +23,13 @@ namespace HuePat.VoxIR.Evaluation.IO {
 
             HuePat.VoxIR.IO.Visualization.Visualizer.VisualizeSpacePartitioningAsPLY(
                 $"{outputConfig.OutputDirectory}/Test_RoomPartitioning.ply",
-                reconstructionGrid);
+                reconstructionGrid,
+                outputConfig.VoxelMesher);
 
             HuePat.VoxIR.IO.Visualization.Visualizer.VisualizeSpacePartitioningAsPLY(
                 $"{outputConfig.OutputDirectory}/GroundTruth_RoomPartitioning.ply",
-                groundTruthGrid); 
+                groundTruthGrid,
+                outputConfig.VoxelMesher); 
         }
 
         public static void ExportImages(

@@ -19,8 +19,21 @@ namespace HuePat.VoxIR.IO.PLY.Reading {
             this.areVertexCoordinatesFloat = areVertexCoordinatesFloat;
         }
 
+        public List<Point> ReadPoints(
+                string file, 
+                Header header) {
+
+            BinaryReader reader = CreateReader(file, header);
+
+            return ReadPoints(
+                reader,
+                header);
+        }
+
         public Mesh ReadMesh(
                 bool switchNormals,
+                bool createBBox,
+                bool useParallelForBBox,
                 string file, 
                 Header header) {
 
@@ -62,8 +75,8 @@ namespace HuePat.VoxIR.IO.PLY.Reading {
             return new Mesh(
                 vertices, 
                 faces,
-                true,
-                true);
+                createBBox,
+                useParallelForBBox);
         }
 
         private BinaryReader CreateReader(
@@ -82,44 +95,6 @@ namespace HuePat.VoxIR.IO.PLY.Reading {
             reader.BaseStream.Position = header.VertexSectionStartPosition;
 
             return reader;
-        }
-
-        private List<Point> ReadPoints(
-                BinaryReader reader,
-                Header header) {
-
-            int propertyIndex;
-            int maxPropertyIndex;
-            object[] properties;
-            List<Point> points = new List<Point>();
-            Dictionary<int, PropertyType> propertyTypes;
-
-            propertyTypes = header.VertexSection.PropertyTypes;
-            maxPropertyIndex = propertyTypes.Keys.Max();
-            properties = new object[maxPropertyIndex + 1];
-
-            while (points.Count < header.VertexSection.Count) {
-
-                propertyIndex = 0;
-
-                while (propertyIndex <= maxPropertyIndex) {
-
-                    properties[propertyIndex] = ReadProperty(
-                        reader, 
-                        propertyTypes[propertyIndex]);
-
-                    propertyIndex++;
-                }
-
-                points.Add(
-                    new Point(
-                        ParseVector3d(
-                            areVertexCoordinatesFloat,
-                            properties,
-                            header.VertexSection.CoordinateIndices)));
-            }
-
-            return points;
         }
 
         private object ReadProperty(
@@ -145,6 +120,44 @@ namespace HuePat.VoxIR.IO.PLY.Reading {
             }
 
             throw new ArgumentException();
+        }
+
+        private List<Point> ReadPoints(
+                BinaryReader reader,
+                Header header) {
+
+            int propertyIndex;
+            int maxPropertyIndex;
+            object[] properties;
+            List<Point> points = new List<Point>();
+            Dictionary<int, PropertyType> propertyTypes;
+
+            propertyTypes = header.VertexSection.PropertyTypes;
+            maxPropertyIndex = propertyTypes.Keys.Max();
+            properties = new object[maxPropertyIndex + 1];
+
+            while (points.Count < header.VertexSection.Count) {
+
+                propertyIndex = 0;
+
+                while (propertyIndex <= maxPropertyIndex) {
+
+                    properties[propertyIndex] = ReadProperty(
+                        reader,
+                        propertyTypes[propertyIndex]);
+
+                    propertyIndex++;
+                }
+
+                points.Add(
+                    new Point(
+                        ParseVector3d(
+                            areVertexCoordinatesFloat,
+                            properties,
+                            header.VertexSection.CoordinateIndices)));
+            }
+
+            return points;
         }
 
         private Face ParseFace(

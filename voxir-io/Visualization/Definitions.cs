@@ -27,23 +27,6 @@ namespace HuePat.VoxIR.IO.Visualization {
             public static readonly Color BOTH_ERRORS_COLOR = Color.Pink;
         }
 
-        public static class WallNormalColors {
-            public static readonly Color NORMAL_COLOR_NONE = Color.LightGray;
-            public static readonly Color NORMAL_COLOR_MULTIPLE_ROOMS = Color.Brown;
-            public static readonly Color NORMAL_COLOR_OTHER = Color.DarkGray;
-
-            public static readonly Dictionary<(int, int), Color> NORMAL_DIRECTION_COLORS = new Dictionary<(int, int), Color> {
-                { (0, 1), Color.Red },
-                { (1, 0), Color.Green },
-                { (0, -1), Color.Blue },
-                { (-1, 0), Color.Yellow },
-                { (1, 1), Color.Pink },
-                { (1, -1), Color.Orange },
-                { (-1, -1), Color.Cyan },
-                { (-1, 1), Color.Purple },
-            };
-        }
-
         public static Dictionary<int, Color> VOXEL_CLASS_COLORS = new Dictionary<int, Color> {
             { VisualizationVoxelClassValues.NONE, Color.Yellow },
             { VisualizationVoxelClassValues.CEILING, Color.Red },
@@ -100,24 +83,6 @@ namespace HuePat.VoxIR.IO.Visualization {
             }
 
             return VisualizationVoxelClassValues.NONE;
-        }
-
-        public static Color GetWallNormalsColor(
-                this (int, int)[][] normals) {
-
-            if (normals.Length == 0) {
-                return WallNormalColors.NORMAL_COLOR_NONE;
-            }
-
-            if (normals.Length > 1) {
-                return WallNormalColors.NORMAL_COLOR_MULTIPLE_ROOMS;
-            }
-
-            if (normals[0].Length > 1) {
-                return WallNormalColors.NORMAL_COLOR_OTHER;
-            }
-
-            return WallNormalColors.NORMAL_DIRECTION_COLORS[normals[0][0]];
         }
     }
 }

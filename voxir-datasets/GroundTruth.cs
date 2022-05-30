@@ -23,7 +23,8 @@ namespace HuePat.VoxIR.Datasets {
                 AABox gridExtent,
                 Dictionary<int, List<(Mesh, GroundTruthInfo)>> groundTruthMeshes) {
 
-            int[,,][] groundTruthGrid;
+            (int, int, int) gridSize;
+             int[,,][] groundTruthGrid;
 
             if (gridExtent == null) {
 
@@ -35,9 +36,14 @@ namespace HuePat.VoxIR.Datasets {
                     true);
             }
 
-            groundTruthGrid = Voxelizer.InitializeGrid(
+            gridSize = Voxelizer.DetermineGridSize(
                 resolution,
                 ref gridExtent);
+
+            groundTruthGrid = new int[
+                gridSize.Item1,
+                gridSize.Item2,
+                gridSize.Item3][];
 
             foreach ((Mesh, GroundTruthInfo) groundTruthMesh in groundTruthMeshes.UnwrapValues()) {
 

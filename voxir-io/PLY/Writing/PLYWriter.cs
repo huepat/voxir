@@ -1,5 +1,6 @@
 ﻿using HuePat.VoxIR.Util.Geometry;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace HuePat.VoxIR.IO.PLY.Writing {
@@ -13,6 +14,7 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
         private PLYEncoding encoding;
         private IEncoder vertexTempFileEncoder;
         private IEncoder faceTempFileEncoder;
+        private IList<string> additionalVertexPropertyLabels;
 
         public bool WriteCoordinatesAsFloat { private get; set; }
 
@@ -27,7 +29,15 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
         }
 
         public PLYWriter(
-                string file) {
+                string file) :
+                    this(
+                        file,
+                        new string[0]) {
+        }
+
+        public PLYWriter(
+                string file,
+                IList<string> additionalVertexPropertyLabels) {
 
             WriteCoordinatesAsFloat = true;
             Encoding = PLYEncoding.BINARY_LITTLE_ENDIAN;
@@ -35,6 +45,7 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
             vertexCount = faceCount = 0;
 
             this.file = file;
+            this.additionalVertexPropertyLabels = additionalVertexPropertyLabels;
             if (File.Exists(file)) {
                 File.Delete(file);
             }
@@ -61,7 +72,8 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
                 vertexCount,
                 faceCount,
                 file,
-                Encoding);
+                Encoding,
+                additionalVertexPropertyLabels);
 
             using (Stream output = new FileStream(
                     file, 
@@ -82,22 +94,42 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
         }
 
         public void Write(
-                Mesh mesh,
-                Color color) {
-
-            int offset = vertexCount;
+                PointCloud pointCloud,
+                Color color,
+                IList<float>? additionalFloatProperties = null) {
 
             using (InvariantCultureBlock block = new InvariantCultureBlock()) {
 
-                for (int i = 0; i < mesh.Vertices.Count; i++) {
+                for (int i = 0; i < pointCloud.Count; i++) {
+
                     vertexCount++;
+
                     vertexTempFileEncoder.Encode(
-                        mesh.Vertices[i],
-                        color);
+                        pointCloud[i],
+                        color,
+                        additionalFloatProperties);
                 }
+            }
+        }
+
+        public void Write(
+                Mesh mesh,
+                Color color,
+                IList<float>? additionalFloatProperties = null) {
+
+            int offset = vertexCount;
+
+            Write(
+                mesh.Vertices,
+                color,
+                additionalFloatProperties);
+
+            using (InvariantCultureBlock block = new InvariantCultureBlock()) {
 
                 for (int i = 0; i < mesh.Count; i++) {
+
                     faceCount++;
+
                     faceTempFileEncoder.Encode(
                         offset,
                         mesh[i]);

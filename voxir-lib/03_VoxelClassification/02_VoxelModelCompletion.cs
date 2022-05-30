@@ -98,7 +98,6 @@ namespace HuePat.VoxIR.VoxelClassification {
                     floorCandidate,
                     out floorCandidateCount);
 
-
                 if (floorCandidateCount < minFloorArea) {
                     break;
                 }
@@ -302,7 +301,8 @@ namespace HuePat.VoxIR.VoxelClassification {
         private static int[] GetVerticalGridNormalDirections(
                 byte normalGridValue) {
 
-            if (normalGridValue == NormalGridValues.NORMAL_HORIZONTAL) {
+            if (normalGridValue == NormalGridValues.NORMAL_HORIZONTAL
+                    || normalGridValue == NormalGridValues.NORMAL_UP_AND_DOWN) {
                 return new int[] { -1, 1 };
             }
             else if (normalGridValue == NormalGridValues.NORMAL_DOWN) {
@@ -456,7 +456,8 @@ namespace HuePat.VoxIR.VoxelClassification {
 
                         if (!isRoomless[i, r, c]
                                 || isSegmented[i, r, c]
-                                || normalGrid[i, r, c] != NormalGridValues.NORMAL_UP) {
+                                || (normalGrid[i, r, c] != NormalGridValues.NORMAL_UP
+                                    && normalGrid[i, r, c] != NormalGridValues.NORMAL_UP_AND_DOWN)) {
                             continue;
                         }
 
@@ -499,7 +500,8 @@ namespace HuePat.VoxIR.VoxelClassification {
                                     }
 
                                     if (isRoomless[candidate.Item1, r2, c2]
-                                            && normalGrid[candidate.Item1, r2, c2] == NormalGridValues.NORMAL_UP) {
+                                            && (normalGrid[candidate.Item1, r2, c2] == NormalGridValues.NORMAL_UP
+                                            || normalGrid[candidate.Item1, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN)) {
                                         candidates.Enqueue((candidate.Item1, r2, c2));
                                         continue;
                                     }
@@ -513,7 +515,8 @@ namespace HuePat.VoxIR.VoxelClassification {
                                         }
 
                                         if (isRoomless[i2, r2, c2]
-                                                && normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP) {
+                                                && (normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP
+                                                    || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN)) {
                                             candidates.Enqueue((i2, r2, c2));
                                             break;
                                         }
@@ -525,7 +528,8 @@ namespace HuePat.VoxIR.VoxelClassification {
                                         }
 
                                         if (isRoomless[i2, r2, c2]
-                                                && normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP) {
+                                                && (normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP
+                                                    || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN)) {
                                             candidates.Enqueue((i2, r2, c2));
                                             break;
                                         }
@@ -782,9 +786,11 @@ namespace HuePat.VoxIR.VoxelClassification {
             }
             else {
                 holeGrid = DetectHoles(floorHeightGrid);
+
                 holes = SegmentHoles(
                     holeGrid,
                     floorHeightGrid);
+
                 RemoveHolesWithClosedBorder(
                     minCeilingGuessHeight,
                     holeGrid,
@@ -792,6 +798,7 @@ namespace HuePat.VoxIR.VoxelClassification {
                     normalGrid,
                     floorCandidateBBox,
                     holes);
+
                 InterpolateHoleHeight(
                     holeGrid,
                     floorHeightGrid);
@@ -1322,7 +1329,8 @@ namespace HuePat.VoxIR.VoxelClassification {
                             break;
                         }
 
-                        if (normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_DOWN) {
+                        if (normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_DOWN
+                                || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN) {
                             if (!heightCounterPixels.Contains((r2, c2))) {
                                 heightCounterPixels.Add((r2, c2));
                                 heightCounters.BucketIncrement(i2);
@@ -1404,7 +1412,8 @@ namespace HuePat.VoxIR.VoxelClassification {
                     for (i2 = i - 1; i2 < i - ceilingHeight; i2--) {
                         if (i2 == 0
                                 || reconstructionGrid[i2, r2, c2] != null
-                                || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_DOWN) {
+                                || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_DOWN
+                                || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN) {
                             found = true;
                             ceilingHeightGrid[r, c] = i2;
                             break;

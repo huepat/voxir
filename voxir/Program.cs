@@ -13,12 +13,19 @@ namespace HuePat.VoxIR {
         // VoxIR: Voxel-Based Indoor Reconstruction
         //-----------------------------------------
         //
-        // This solution contains the code for the publication: 
+        // This solution contains the code for the publications: 
         //
         //      Hübner, P.; Weinmann, M.; Wursthorn, S. & Hinz, S. (2021).
         //      Automatic Voxel-based 3D Indoor Reconstruction and Room Partitioning from Triangle Meshes.
         //      ISPRS Journal of Photogrammetry and Remote Sensing, 2021, 181, 254-278
         //      https://www.sciencedirect.com/science/article/abs/pii/S0924271621001799
+        //
+        // and
+
+        //      Hübner, P.; Wursthorn, S. & Weinmann, M. (2022).
+        //      Normal Classification of 3D Occupancy Grids for Voxel-Based Indoor Reconstruction from Point Clouds.
+        //      ISPRS Annals of the Photogrammetry, Remote Sensing and Spatial Information Sciences, 2022, V-4-2022, 121-128
+        //      https://www.isprs-ann-photogramm-remote-sens-spatial-inf-sci.net/V-4-2022/121/2022/
         //
         // This Console Project only contains a simple executable example to demonstrate, how VoxIR is used.
         // For more detailed documentation, see the ReadMe of the repository:

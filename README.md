@@ -21,6 +21,21 @@ Best regards
 Patrick Hübner
 (on behalf of the authors)
 
+**Update 30.05.2022**: 
+
+Included code for publication:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Hübner, P.; Wursthorn, S. & Weinmann, M. (2022).*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*Normal Classification of 3D Occupancy Grids for Voxel-Based Indoor Reconstruction from Point Clouds.*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*ISPRS Annals of the Photogrammetry, Remote Sensing and Spatial Information Sciences, 2022, V-4-2022, 121-128*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*https://www.isprs-ann-photogramm-remote-sens-spatial-inf-sci.net/V-4-2022/121/2022/*<br/>
+
+See:
+- *voxir-lib/NormalGridDetermination*
+- *voxir-io/ISPRS*
+- *voxir-evaluation/ISPRS*
+- *voxir-evaluation/NormalGridDetermination*
+
 ## Structure of the Repository
 
 The Visual Studio Solution in this repository contains multiple class library projects:

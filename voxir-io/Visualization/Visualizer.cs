@@ -1,7 +1,6 @@
 ﻿using HuePat.VoxIR.IO.PLY.Writing;
 using HuePat.VoxIR.Util.Geometry;
 using HuePat.VoxIR.Util.Grid;
-using HuePat.VoxIR.VoxelModelRefinement;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -383,38 +382,47 @@ namespace HuePat.VoxIR.IO.Visualization {
             roomIds = grid.GetRoomIds();
             colors = Color.GetRandomColorMapping(roomIds);
 
-            for (i = 0; i < grid.GetLength(0); i++) {
-                for (r = 0; r < grid.GetLength(1); r++) {
-                    for (c = 0; c < grid.GetLength(2); c++) {
+            using (PLYWriter writer = new PLYWriter(file)) {
+                for (i = 0; i < grid.GetLength(0); i++) {
+                    for (r = 0; r < grid.GetLength(1); r++) {
+                        for (c = 0; c < grid.GetLength(2); c++) {
 
-                        voxelState = grid[i, r, c];
-                        if (voxelState == null) {
-                            continue;
-                        }
-
-                        foreach (int roomId in voxelState.GetRoomIds()) {
-
-                            if (DoAllNeighboursHaveSameRoomId(
-                                    i,
-                                    r,
-                                    c,
-                                    roomId,
-                                    grid)) {
+                            voxelState = grid[i, r, c];
+                            if (voxelState == null) {
                                 continue;
                             }
 
-                            if (!writers.ContainsKey(roomId)) {
-                                writers.Add(
-                                    roomId,
-                                    file);
-                            }
+                            foreach (int roomId in voxelState.GetRoomIds()) {
 
-                            writers[roomId].Write(
-                                i, 
-                                r, 
-                                c,
-                                colors[roomId],
-                                voxelMesher);
+                                if (DoAllNeighboursHaveSameRoomId(
+                                        i,
+                                        r,
+                                        c,
+                                        roomId,
+                                        grid)) {
+                                    continue;
+                                }
+
+                                if (!writers.ContainsKey(roomId)) {
+                                    writers.Add(
+                                        roomId,
+                                        file);
+                                }
+
+                                writers[roomId].Write(
+                                    i,
+                                    r,
+                                    c,
+                                    colors[roomId],
+                                    voxelMesher);
+
+                                writer.Write(
+                                    i,
+                                    r,
+                                    c,
+                                    colors[roomId],
+                                    voxelMesher);
+                            }
                         }
                     }
                 }
@@ -509,50 +517,260 @@ namespace HuePat.VoxIR.IO.Visualization {
                 colors); 
         }
 
-        public static void VisualizeWallNormalsAsPly(
+        public static void VisualizeNormalGridAsPly(
                 string file,
-                int[,,][] reconstructionGrid) {
+                byte[,,] normalGrid) {
 
-            VisualizeWallNormalsAsPly(
+            VisualizeNormalGridAsPly(
                 file,
-                reconstructionGrid,
+                normalGrid,
                 DEFAULT_VOXEL_MESHER);
         }
 
-        public static void VisualizeWallNormalsAsPly(
+        public static void VisualizeNormalGridAsPly(
                 string file,
-                int[,,][] reconstructionGrid,
+                byte[,,] normalGrid,
                 IVoxelMesher voxelMesher) {
 
             int i, r, c;
-            int[] voxelState;
-            int[] voxelClassValues;
+            Mesh mesh;
 
-            using (PLYWriter writer = new PLYWriter(file)) {
+            using (PLYWriter plyWriter = new PLYWriter(file)) {
 
-                for (i = 0; i < reconstructionGrid.GetLength(0); i++) {
-                    for (r = 0; r < reconstructionGrid.GetLength(1); r++) {
-                        for (c = 0; c < reconstructionGrid.GetLength(2); c++) {
+                for (i = 0; i < normalGrid.GetLength(0); i++) {
+                    for (r = 0; r < normalGrid.GetLength(1); r++) {
+                        for (c = 0; c < normalGrid.GetLength(2); c++) {
 
-                            voxelState = reconstructionGrid[i, r, c];
-                            if (voxelState == null) {
-                                continue;
+                            mesh = voxelMesher.Mesh(i, r, c);
+
+                            if (normalGrid[i, r, c] == NormalGridValues.NORMAL_HORIZONTAL) {
+
+                                plyWriter.Write(
+                                    mesh,
+                                    Color.Gray);
                             }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP) {
 
-                            voxelClassValues = voxelState.GetVoxelClassValues();
-                            if (!voxelClassValues.Contains(VoxelClassValues.WALL)
-                                    && !voxelClassValues.Contains(VoxelClassValues.WALL_OPENING)) {
-                                continue;
+                                plyWriter.Write(
+                                    mesh,
+                                    Color.Green);
                             }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_DOWN) {
 
-                            writer.Write(
-                                i,
-                                r,
-                                c,
-                                voxelState
-                                    .GetNormals()
-                                    .GetWallNormalsColor(),
-                                voxelMesher);
+                                plyWriter.Write(
+                                    mesh,
+                                    Color.Red);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP_AND_DOWN) {
+
+                                plyWriter.Write(
+                                    mesh,
+                                    Color.Orange);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void VisualizeNormalGridAsSections(
+                string file,
+                byte[,,] normalGrid,
+                BackgroundColor backgroundColor) {
+
+            VisualizeNormalGridAsISections(
+                file,
+                normalGrid,
+                backgroundColor);
+
+            VisualizeNormalGridAsRSections(
+                file,
+                normalGrid,
+                backgroundColor);
+
+            VisualizeNormalGridAsCSections(
+                file,
+                normalGrid,
+                backgroundColor);
+        }
+
+        public static void VisualizeNormalGridAsISections(
+                string file,
+                byte[,,] normalGrid,
+                BackgroundColor backgroundColor) {
+
+            int i, r, c;
+
+            for (i = 0; i < normalGrid.GetLength(0); i++) {
+
+                using (ImageWriter imageWriter = new ImageWriter(
+                        normalGrid.GetLength(1),
+                        normalGrid.GetLength(2),
+                        FileSystemUtils.GetFileWithPostfix(
+                            file,
+                            $"_i{i}"))) {
+
+                    for (r = 0; r < normalGrid.GetLength(1); r++) {
+                        for (c = 0; c < normalGrid.GetLength(2); c++) {
+
+                            if (normalGrid[i, r, c] == NormalGridValues.NORMAL_HORIZONTAL) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Gray);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Green);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_DOWN) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Red);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP_AND_DOWN) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Orange);
+                            }
+                            else {
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    backgroundColor == BackgroundColor.BLACK ?
+                                        Color.Black :
+                                        Color.White);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void VisualizeNormalGridAsRSections(
+                string file,
+                byte[,,] normalGrid,
+                BackgroundColor backgroundColor) {
+
+            int i, r, c;
+
+            for (r = 0; r < normalGrid.GetLength(1); r++) {
+
+                using (ImageWriter imageWriter = new ImageWriter(
+                        normalGrid.GetLength(1),
+                        normalGrid.GetLength(2),
+                        FileSystemUtils.GetFileWithPostfix(
+                            file,
+                            $"_r{r}"))) {
+
+                    for (i = 0; i < normalGrid.GetLength(0); i++) {
+                        for (c = 0; c < normalGrid.GetLength(2); c++) {
+
+                            if (normalGrid[i, r, c] == NormalGridValues.NORMAL_HORIZONTAL) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Gray);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Green);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_DOWN) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Red);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP_AND_DOWN) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Orange);
+                            }
+                            else {
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    backgroundColor == BackgroundColor.BLACK ?
+                                        Color.Black :
+                                        Color.White);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void VisualizeNormalGridAsCSections(
+                string file,
+                byte[,,] normalGrid,
+                BackgroundColor backgroundColor) {
+
+            int i, r, c;
+
+            for (c = 0; c < normalGrid.GetLength(2); c++) {
+
+                using (ImageWriter imageWriter = new ImageWriter(
+                        normalGrid.GetLength(1),
+                        normalGrid.GetLength(2),
+                        FileSystemUtils.GetFileWithPostfix(
+                            file,
+                            $"_c{c}"))) {
+
+                    for (r = 0; r < normalGrid.GetLength(1); r++) {
+                        for (i = 0; i < normalGrid.GetLength(0); i++) {
+
+                            if (normalGrid[i, r, c] == NormalGridValues.NORMAL_HORIZONTAL) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Gray);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Green);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_DOWN) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Red);
+                            }
+                            else if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP_AND_DOWN) {
+
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    Color.Orange);
+                            }
+                            else {
+                                imageWriter.Write(
+                                    r,
+                                    c,
+                                    backgroundColor == BackgroundColor.BLACK ?
+                                        Color.Black :
+                                        Color.White);
+                            }
                         }
                     }
                 }

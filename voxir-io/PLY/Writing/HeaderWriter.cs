@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace HuePat.VoxIR.IO.PLY.Writing {
     static class HeaderWriter {
@@ -7,7 +8,8 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
                 long vertexCount,
                 long faceCount,
                 string file,
-                PLYEncoding encoding) {
+                PLYEncoding encoding,
+                IList<string> additionalVertexPropertyLabels) {
 
             using (StreamWriter writer = new StreamWriter(file)) {
 
@@ -29,6 +31,11 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
                 writer.WriteLine("property uchar red");
                 writer.WriteLine("property uchar green");
                 writer.WriteLine("property uchar blue");
+
+                foreach(string additionalVertexPropertyLabel in additionalVertexPropertyLabels) {
+                    writer.WriteLine($"property float {additionalVertexPropertyLabel}");
+                }
+
                 writer.WriteLine($"element face {faceCount}");
                 writer.WriteLine("property list uchar int vertex_indices");
                 writer.WriteLine("end_header");

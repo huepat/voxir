@@ -20,17 +20,17 @@ namespace HuePat.VoxIR.Evaluation {
         private static readonly Vector3d UP_AXIS = new Vector3d(0.0, -1.0, 0.0);
 
         public static void Evaluate(
+                bool redetermineNormalGrid,
                 IList<(string, string)> testFilesWithGroundTruthDirectories,
                 IList<(double, double)> resolutionAndHorizontalRotationValues,
                 OutputConfig outputConfig) {
 
-            string timestamp = DateTime
-                .Now
-                .ToString("yyyyMMdd_HHmmss"); ;
+            string timestamp = Util.CreateTimestampLabel();
 
             foreach ((string, string) fileInfo in testFilesWithGroundTruthDirectories) {
 
                 Evaluate(
+                    redetermineNormalGrid,
                     fileInfo.Item1,
                     fileInfo.Item2,
                     resolutionAndHorizontalRotationValues,
@@ -41,62 +41,39 @@ namespace HuePat.VoxIR.Evaluation {
         }
 
         public static void Evaluate(
+                bool redetermineNormalGrid,
                 string testFile,
                 string groundTruthDirectory,
                 IList<(double, double)> resolutionAndHorizontalRotationValues,
                 OutputConfig outputConfig) {
 
-            string parameterLabel;
-            string line = "";
-            List<Result> results = new List<Result>();
+            Util.Evaluate(
+                testFile,
+                outputConfig,
+                resolutionAndHorizontalRotationValues,
+                (resolution, rotationAroundHorizontalAxis, outputConfig) => {
 
-            using (InvariantCultureBlock block = new InvariantCultureBlock()) {
+                    return Evaluate(
+                        redetermineNormalGrid,
+                        testFile,
+                        groundTruthDirectory,
+                        resolution,
+                        rotationAroundHorizontalAxis,
+                        outputConfig);
 
-                using (StreamWriter writer = new StreamWriter(
-                        $"{outputConfig.OutputDirectory}/EvaluationResults.csv")) {
-
-                    foreach ((double, double) parameters in resolutionAndHorizontalRotationValues) {
-
-                        parameterLabel = $"Res. {parameters.Item1:0.00}m" +
-                            $" | Rot. {parameters.Item2.RadianToDegree():0.00}°";
-
-                        Console.WriteLine($"Evaluating {testFile} [{parameterLabel}]");
-
-                        line += $"; {parameterLabel}";
-
-                        results.Add(
-                            Evaluate(
-                                testFile,
-                                groundTruthDirectory,
-                                parameters.Item1,
-                                parameters.Item2,
-                                outputConfig.CopyWithSubDirectory(
-                                    outputConfig.ExportExtendedLogs 
-                                        || outputConfig.ExportPLY
-                                        || outputConfig.ExportImages,
-                                    $"Resolution {parameters.Item1:0.00}m, Horizontal Rotation {parameters.Item2.RadianToDegree():0.00}°")));
-                    }
-
-                    writer.WriteLine(line);
-
-                    TextOutput.WriteRoomSegmentationEvaluationResults(
-                        writer,
-                        results);
-
-                    TextOutput.WriteVoxelClassificationEvaluationResults(
-                        writer,
-                        results);
-                }
-            }
+                });
         }
 
         public static Result Evaluate(
+                bool redetermineNormalGrid,
                 string testFile,
                 string groundTruthDirectory,
                 double resolution,
                 double rotationAngle,
                 OutputConfig outputConfig) {
 
+            bool[,,] occupancyGrid;
+            byte[,,] normalGrid;
             int[,,][] reconstructionGrid;
             int[,,][] groundTruthGrid;
             AABox extent;
@@ -132,11 +109,33 @@ namespace HuePat.VoxIR.Evaluation {
                     }
                 }
 
-                reconstructionGrid = VoxIR.Process(
-                    resolution,
-                    extent,
-                    testMesh,
-                    out testRampSpaceIds);
+                if (redetermineNormalGrid) {
+
+                    normalGrid = DataPreparation.Voxelization.Voxelize(
+                        resolution,
+                        extent,
+                        testMesh);
+
+                    occupancyGrid = Util.GetOccupancyGrid(normalGrid);
+
+                    normalGrid = HuePat.VoxIR.NormalGridDetermination
+                        .NormalGridDetermination
+                        .DetermineNormalGrid(
+                            resolution,
+                            occupancyGrid);
+
+                    reconstructionGrid = VoxIR.Process(
+                        resolution,
+                        normalGrid,
+                        out testRampSpaceIds);
+                }
+                else {
+                    reconstructionGrid = VoxIR.Process(
+                        resolution,
+                        extent,
+                        testMesh,
+                        out testRampSpaceIds);
+                }
 
                 groundTruthRampSpaceIds = groundTruthMeshes
                     .Keys
@@ -158,23 +157,6 @@ namespace HuePat.VoxIR.Evaluation {
             }
 
             return result;
-        }
-
-        private static OutputConfig CopyWithSubDirectory(
-                this OutputConfig outputConfig,
-                bool createDirectory,
-                string subDirectory) {
-
-            return new OutputConfig(
-                    $"{outputConfig.OutputDirectory}/{subDirectory}",
-                    createDirectory) {
-                ExportExtendedLogs = outputConfig.ExportExtendedLogs,
-                ExportPLY = outputConfig.ExportPLY,
-                ExportImages = outputConfig.ExportImages,
-                BackgroundColor = outputConfig.BackgroundColor,
-                OutputImageFileType = outputConfig.OutputImageFileType,
-                VoxelMesher = outputConfig.VoxelMesher
-            };
         }
 
         private static Result Evaluate(
@@ -316,7 +298,7 @@ namespace HuePat.VoxIR.Evaluation {
                 voxelClassificationNeighbourhoodRecall);
         }
 
-        private static AABox GetExtent(
+        public static AABox GetExtent(
                 Mesh testMesh,
                 Dictionary<int, List<(Mesh, GroundTruthInfo)>> groundTruthMeshes) {
 

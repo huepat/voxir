@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace HuePat.VoxIR.VoxelModelRefinement {
-    public static class WallNormals {
+    static class WallNormals {
         public static int[] GetBaseVoxelState(
                 this int[] voxelState) {
 

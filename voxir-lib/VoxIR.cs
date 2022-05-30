@@ -59,6 +59,14 @@ namespace HuePat.VoxIR {
         public const double POST_SPACE_PARTITIONING_REFINEMENT_WALL_OPENING_MIN_WIDTH = 0.5;
         public const double POST_SPACE_PARTITIONING_REFINEMENT_WALL_OPENING_MAX_CLOSED_RATIO = 0.5;
         public const double POST_SPACE_PARTITIONING_REFINEMENT_MIN_WALL_HEIGHT = 1.5;
+        public const double NORMAL_GRID_DETERMINATION_NORMAL_HORIZONTAL_MIN_VOXEL_STACK_HEIGHT = 0.5;
+        public const double NORMAL_GRID_DETERMINATION_NORMAL_HORIZONTAL_REFINEMENT_MAX_DISTANCE = 0.2;
+        public const double NORMAL_GRID_DETERMINATION_NORMAL_HORIZONTAL_REFINEMENT_MAX_AREA = 0.02;
+        public const double NORMAL_GRID_DETERMINATION_FLOOR_INITIALIZATION_MIN_AREA = 0.02;
+        public const double NORMAL_GRID_DETERMINATION_NORMAL_VERTICAL_SEGMENT_MIN_AREA = 0.1;
+        public const double NORMAL_GRID_DETERMINATION_MIN_ROOM_HEIGHT = 1.5;
+        public const double NORMAL_GRID_DETERMINATION_MIN_BORDER_FILL_RATIO = 0.5;
+        public const double NORMAL_GRID_DETERMINATION_BORDER_FILL_RATION_DETERMINATION_HEIGHT_OFFSET = 0.1;
     }
 
     public static class VoxIR {
@@ -68,16 +76,72 @@ namespace HuePat.VoxIR {
                 Mesh mesh,
                 out HashSet<int> rampSpaceIds) {
 
-            int roomCount;
-            byte[,,] normalGrid;
-            int[,,][] reconstructionGrid;
-            HashSet<int> roomIdsWithoutFloor;
-            HashSet<int> roomletIds;
-
-            normalGrid = DataPreparation.Voxelization.Voxelize(
+            byte[,,] normalGrid = DataPreparation.Voxelization.Voxelize(
                 resolution,
                 gridExtent,
                 mesh);
+
+            return Process(
+                resolution,
+                normalGrid,
+                out rampSpaceIds);
+        }
+
+        public static int[,,][] Process(
+                double resolution,
+                AABox gridExtent,
+                PointCloud pointCloud,
+                out HashSet<int> rampSpaceIds) {
+
+            (int, int, int) gridSize;
+            bool[,,] occupancyGrid;
+
+            if (gridExtent == null) {
+                gridExtent = pointCloud.BBox;
+            }
+
+            gridSize = Voxelizer.DetermineGridSize(
+                resolution,
+                ref gridExtent);
+
+            occupancyGrid = Voxelizer.VoxelizePointCloud(
+                resolution,
+                gridSize,
+                gridExtent.Min,
+                pointCloud);
+
+            return Process(
+                resolution,
+                occupancyGrid,
+                out rampSpaceIds);
+        }
+
+        public static int[,,][] Process(
+                double resolution,
+                bool[,,] occupancyGrid,
+                out HashSet<int> rampSpaceIds) {
+
+            byte[,,] normalGrid = NormalGridDetermination
+                .NormalGridDetermination
+                .DetermineNormalGrid(
+                    resolution,
+                    occupancyGrid);
+
+            return Process(
+                resolution,
+                normalGrid,
+                out rampSpaceIds);
+        }
+
+        public static int[,,][] Process(
+                double resolution,
+                byte[,,] normalGrid,
+                out HashSet<int> rampSpaceIds) {
+
+            int roomCount;
+            int[,,][] reconstructionGrid;
+            HashSet<int> roomIdsWithoutFloor;
+            HashSet<int> roomletIds;
 
             reconstructionGrid = CreateVoxelReconstructionGrid(
                 resolution,

@@ -26,11 +26,13 @@ namespace HuePat.VoxIR.CeilingAndFloorReconstruction {
                         for (r = 0; r < normalGrid.GetLength(1); r++) {
                             for (i = normalGrid.GetLength(0) - 1; i > 0; i--) {
 
-                                if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP) {
+                                if (normalGrid[i, r, c] == NormalGridValues.NORMAL_UP
+                                        || normalGrid[i, r, c] == NormalGridValues.NORMAL_UP_AND_DOWN) {
                                     localFloorIncidence[i]++;
                                 }
 
-                                if (normalGrid[i - 1, r, c] == NormalGridValues.NORMAL_DOWN) {
+                                if (normalGrid[i - 1, r, c] == NormalGridValues.NORMAL_DOWN
+                                        || normalGrid[i, r, c] == NormalGridValues.NORMAL_UP_AND_DOWN) {
 
                                     if (normalGrid[i, r, c] == NormalGridValues.NORMAL_HORIZONTAL) {
                                         normalGrid[i - 1, r, c] = NormalGridValues.NORMAL_HORIZONTAL;
@@ -80,7 +82,8 @@ namespace HuePat.VoxIR.CeilingAndFloorReconstruction {
                     for (c = 0; c < normalGrid.GetLength(2); c++) {
 
                         if (isSegmented[i, r, c]
-                                || normalGrid[i, r, c] != NormalGridValues.NORMAL_DOWN) {
+                                || (normalGrid[i, r, c] != NormalGridValues.NORMAL_DOWN
+                                    && normalGrid[i, r, c] != NormalGridValues.NORMAL_UP_AND_DOWN)) {
                             continue;
                         }
 
@@ -119,7 +122,8 @@ namespace HuePat.VoxIR.CeilingAndFloorReconstruction {
                                                 && r2 < normalGrid.GetLength(1)
                                                 && c2 < normalGrid.GetLength(2)
                                                 && !isSegmented[i2, r2, c2]
-                                                && normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_DOWN) {
+                                                && (normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_DOWN
+                                                    || normalGrid[i2, r2, c2] == NormalGridValues.NORMAL_UP_AND_DOWN)) {
                                             candidates.Enqueue((i2, r2, c2));
                                         }
                                     }

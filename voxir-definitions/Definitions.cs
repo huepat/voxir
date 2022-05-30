@@ -6,6 +6,7 @@ namespace HuePat.VoxIR {
         public const byte NORMAL_DOWN = 1;
         public const byte NORMAL_UP = 2;
         public const byte NORMAL_HORIZONTAL = 3;
+        public const byte NORMAL_UP_AND_DOWN = 4;
     }
 
     public static class VoxelClassValues {

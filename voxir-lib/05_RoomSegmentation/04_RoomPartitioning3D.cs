@@ -4603,7 +4603,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
                     && CanMergeTransitionSpaceWithAdjacentRooms(
                         transitionSpaceId,
                         sureMergeWidth,
-                        normalGrid,
                         spacePartitioningGrid,
                         transitionSpaceColumns[transitionSpaceId],
                         spacePartitioningSegmentAdjacency)) {
@@ -4897,7 +4896,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
         private static bool CanMergeTransitionSpaceWithAdjacentRooms(
                 int transitionSpaceId,
                 int sureMergeWidth,
-                byte[,,] normalGrid,
                 int[,,] spacePartitioningGrid,
                 List<List<(int, int, int)>> transitionSpaceColumns,
                 Dictionary<int, HashSet<int>> spacePartitioningSegmentAdjacency) {
@@ -4914,7 +4912,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
 
             GetTransitionSpaceConnectionsToAdjacentRooms(
                 transitionSpaceId,
-                normalGrid,
                 spacePartitioningGrid,
                 transitionSpaceColumns,
                 spacePartitioningSegmentAdjacency,
@@ -4987,7 +4984,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
 
         private static void GetTransitionSpaceConnectionsToAdjacentRooms(
                 int transitionSpaceId,
-                byte[,,] normalGrid,
                 int[,,] spacePartitioningGrid,
                 List<List<(int, int, int)>> transitionSpaceColumns,
                 Dictionary<int, HashSet<int>> spacePartitioningSegmentAdjacency,
@@ -5006,7 +5002,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
                     directions = GetTransitionSpaceDirectionsToAdjacentRooms(
                         transitionSpaceId,
                         voxel,
-                        normalGrid,
                         spacePartitioningGrid,
                         spacePartitioningSegmentAdjacency,
                         contactSurfacePositionsToAdjacentRooms);
@@ -5030,7 +5025,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
         private static Dictionary<int, List<(int, int)>> GetTransitionSpaceDirectionsToAdjacentRooms(
                 int transitionSpaceId,
                 (int, int, int) voxel,
-                byte[,,] normalGrid,
                 int[,,] spacePartitioningGrid,
                 Dictionary<int, HashSet<int>> spacePartitioningSegmentAdjacency,
                 Dictionary<int, HashSet<(int, int)>> contactSurfacePositionsToAdjacentRooms) {
@@ -7139,10 +7133,6 @@ namespace HuePat.VoxIR.RoomSegmentation {
 
             for (i = 0; i < reconstructionGrid.GetLength(0); i++) {
                 for (r = 0; r < reconstructionGrid.GetLength(1); r++) {
-
-                    if (i == 46 && r == 57 && c == 65) {
-                        int t = 0;
-                    }
 
                     voxelState = reconstructionGrid[i, r, c];
                     if (voxelState == null) {

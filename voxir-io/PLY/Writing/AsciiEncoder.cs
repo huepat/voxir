@@ -1,4 +1,5 @@
 ﻿using HuePat.VoxIR.Util.Geometry;
+using System.Collections.Generic;
 using System.IO;
 
 namespace HuePat.VoxIR.IO.PLY.Writing {
@@ -27,11 +28,19 @@ namespace HuePat.VoxIR.IO.PLY.Writing {
 
         public void Encode(
                 Point point, 
-                Color color) {
+                Color color,
+                IList<float>? additionalFloatProperties = null) {
 
-            writer.WriteLine(
-                $"{(float)point.X} {(float)point.Y} {(float)point.Z} " +
-                $"{color.R} {color.G} {color.B}");
+            string line = $"{(float)point.X} {(float)point.Y} {(float)point.Z} " +
+                $"{color.R} {color.G} {color.B}";
+
+            if (additionalFloatProperties != null) {
+                foreach (float additionalVertexProperty in additionalFloatProperties) {
+                    line = $"{line} {additionalVertexProperty}";
+                }
+            }
+
+            writer.WriteLine(line);
         }
 
         public void Encode(

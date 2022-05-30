@@ -2,23 +2,23 @@
 using HuePat.VoxIR.Util.Geometry;
 using OpenTK.Mathematics;
 
-namespace HuePat.VoxIR.IO.Matterport3D {
-    public class Matterport3DVoxelMesher : GeometryFrameVoxelMesher {
+namespace HuePat.VoxIR.IO.ISPRS {
+    public class ISPRSVoxelMesher : GeometryFrameVoxelMesher {
         private Vector3d anchor;
 
-        public Matterport3DVoxelMesher(
+        public ISPRSVoxelMesher(
                 double resolution,
-                Mesh mesh) :
+                PointCloud pointCloud) :
                     base(
                         resolution,
-                        mesh){
+                        pointCloud) {
 
-            anchor = mesh.GetCentroid();
+            anchor = pointCloud.GetCentroid();
         }
 
         public override Mesh Mesh(
-                int i, 
-                int r, 
+                int i,
+                int r,
                 int c) {
 
             Mesh mesh = base.Mesh(i, r, c);

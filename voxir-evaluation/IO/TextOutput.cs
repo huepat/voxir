@@ -1,81 +1,10 @@
 ﻿using HuePat.VoxIR.IO;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace HuePat.VoxIR.Evaluation.IO {
     public static class TextOutput {
-        public static void WriteRoomSegmentationEvaluationResults(
-                StreamWriter writer,
-                List<Result> results) {
-
-            using (InvariantCultureBlock block = new InvariantCultureBlock()) {
-
-                WriteRoomPartitioningEvaluationResults(
-                    "Room Mapping Error",
-                    writer,
-                    results,
-                    result => result.RoomMappingError);
-
-                WriteRoomPartitioningEvaluationResults(
-                    "Room Segmentation Precision",
-                    writer,
-                    results,
-                    result => result.RoomSegmentationPrecision);
-
-                WriteRoomPartitioningEvaluationResults(
-                    "Room Segmentation Recall",
-                    writer,
-                    results,
-                    result => result.RoomSegmentationRecall);
-
-                WriteRoomPartitioningEvaluationResults(
-                    "Room Segmentation F1-Score",
-                    writer,
-                    results,
-                    result => result.RoomSegmentationF1Score);
-            }   
-        }
-
-        public static void WriteVoxelClassificationEvaluationResults(
-                StreamWriter writer,
-                List<Result> results) {
-
-            using (InvariantCultureBlock block = new InvariantCultureBlock()) {
-
-                WriteVoxelClassificationEvaluationResults(
-                    "Precision",
-                    writer,
-                    results,
-                    result => result.VoxelClassificationPrecision);
-
-                WriteVoxelClassificationEvaluationResults(
-                    "Recall",
-                    writer,
-                    results,
-                    result => result.VoxelClassificationRecall);
-
-                WriteVoxelClassificationEvaluationResults(
-                    "F1-Score",
-                    writer,
-                    results,
-                    result => result.VoxelClassificationF1Score);
-
-                WriteVoxelClassificationEvaluationResults(
-                    "Neighbourhood Precision",
-                    writer,
-                    results,
-                    result => result.VoxelClassificationNeighbourhoodPrecision);
-
-                WriteVoxelClassificationEvaluationResults(
-                    "Neighbourhood Recall",
-                    writer,
-                    results,
-                    result => result.VoxelClassificationNeighbourhoodRecall);
-            }
-        }
-
         public static void WriteWeightedRoomMappings(
                 string directory,
                 HashSet<int> reconstructionRampSpaceIds,
@@ -210,7 +139,7 @@ namespace HuePat.VoxIR.Evaluation.IO {
 
         public static void WriteVoxelClassificationEvaluationResults(
                 string directory,
-                double reconstructionVolumForVoxelClassSubset,
+                double reconstructionVolumeForVoxelClassSubset,
                 Dictionary<int, int> reconstructionVolume,
                 Dictionary<int, double> precision,
                 Dictionary<int, double> recall,
@@ -221,130 +150,34 @@ namespace HuePat.VoxIR.Evaluation.IO {
                 using (StreamWriter writer = new StreamWriter($"{directory}/VoxelClassification_EvaluationResults.txt")) {
 
                     WriteVoxelClassificationEvaluationResults(
-                        reconstructionVolumForVoxelClassSubset,
+                        reconstructionVolumeForVoxelClassSubset,
                         "PRECISION",
                         writer,
                         reconstructionVolume,
                         precision);
 
                     WriteVoxelClassificationEvaluationResults(
-                        reconstructionVolumForVoxelClassSubset,
+                        reconstructionVolumeForVoxelClassSubset,
                         "RECALL",
                         writer,
                         reconstructionVolume,
                         recall);
 
                     WriteVoxelClassificationEvaluationResults(
-                        reconstructionVolumForVoxelClassSubset,
+                        reconstructionVolumeForVoxelClassSubset,
                         "NEIGHBOURHOOD PRECISION (FROM 3D-6-NEIGHBOURHOOD)",
                         writer,
                         reconstructionVolume,
                         neighbourhoodPrecision);
 
                     WriteVoxelClassificationEvaluationResults(
-                        reconstructionVolumForVoxelClassSubset,
+                        reconstructionVolumeForVoxelClassSubset,
                         "NEIGHBOURHOOD RECALL (FROM 3D-6-NEIGHBOURHOOD)",
                         writer,
                         reconstructionVolume,
                         neighbourhoodRecall);
                 }
             }
-        }
-
-        private static void WriteRoomPartitioningEvaluationResults(
-                string metricLabel,
-                StreamWriter writer,
-                List<Result> results,
-                Func<Result, double> getMetricCallback) {
-
-            writer.Write($"{metricLabel} (%)");
-
-            for (int j = 0; j < results.Count; j++) {
-                writer.Write($"; {getMetricCallback(results[j]):0.00}");
-            }
-
-            writer.Write(Environment.NewLine);
-        }
-
-        private static void WriteVoxelClassificationEvaluationResults(
-                string metricLabel,
-                StreamWriter writer,
-                List<Result> results,
-                Func<Result, Dictionary<int, double>> getMetricCallback) {
-
-            WriteVoxelClassificationEvaluationResults(
-                VoxelClassValues.CEILING,
-                metricLabel,
-                "Ceiling",
-                writer,
-                results,
-                getMetricCallback);
-
-            WriteVoxelClassificationEvaluationResults(
-                VoxelClassValues.FLOOR,
-                metricLabel,
-                "Floor",
-                writer,
-                results,
-                getMetricCallback);
-
-            WriteVoxelClassificationEvaluationResults(
-                VoxelClassValues.WALL,
-                metricLabel,
-                "Wall",
-                writer,
-                results,
-                getMetricCallback);
-
-            WriteVoxelClassificationEvaluationResults(
-                VoxelClassValues.INTERIOR_OBJECT,
-                metricLabel,
-                "Interior Object",
-                writer,
-                results,
-                getMetricCallback);
-
-            WriteVoxelClassificationEvaluationResults(
-                VoxelClassValues.EMPTY_INTERIOR,
-                metricLabel,
-                "Empty Interior",
-                writer,
-                results,
-                getMetricCallback);
-
-            WriteVoxelClassificationEvaluationResults(
-                VoxelClassValues.WALL_OPENING,
-                metricLabel,
-                "Wall Opening",
-                writer,
-                results,
-                getMetricCallback);
-        }
-
-        private static void WriteVoxelClassificationEvaluationResults(
-                int voxelClassValue,
-                string metricLabel,
-                string voxelClassValueLabel,
-                StreamWriter writer,
-                List<Result> results,
-                Func<Result, Dictionary<int, double>> getMetricCallback) {
-
-            Dictionary<int, double> evaluationMetric;
-
-            writer.Write($"{metricLabel} {voxelClassValueLabel} (%)");
-
-            for (int j = 0; j < results.Count; j++) {
-
-                evaluationMetric = getMetricCallback(results[j]);
-
-                if (evaluationMetric.ContainsKey(voxelClassValue)) {
-                    writer.Write($"; {evaluationMetric[voxelClassValue]:0.00}");
-                }
-                else {
-                    writer.Write("; ---");
-                }
-            }
-            writer.Write(Environment.NewLine);
         }
 
         private static void WriteWeightedRoomMapping(

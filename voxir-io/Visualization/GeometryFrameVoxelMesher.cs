@@ -2,16 +2,16 @@
 using OpenTK.Mathematics;
 
 namespace HuePat.VoxIR.IO.Visualization {
-    public class MeshFrameVoxelMesher : IVoxelMesher {
+    public class GeometryFrameVoxelMesher : IVoxelMesher {
         private double resolution;
         private Vector3d offset;
 
-        public MeshFrameVoxelMesher(
+        public GeometryFrameVoxelMesher(
                 double resolution,
-                Mesh mesh) {
+                IGeometrySet geometry) {
 
             this.resolution = resolution;
-            offset = mesh.BBox.Min - new Vector3d(resolution);
+            offset = geometry.BBox.Min - new Vector3d(resolution);
         }
 
         public virtual Mesh Mesh(

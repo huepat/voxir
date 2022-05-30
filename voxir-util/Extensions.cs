@@ -363,6 +363,10 @@ namespace HuePat.VoxIR {
         public static double Median(
                 this IEnumerable<double> values) {
 
+            if (!values.Any()) {
+                return 0.0;
+            }
+
             List<double> sorted = values
                 .OrderBy(value => value)
                 .ToList();

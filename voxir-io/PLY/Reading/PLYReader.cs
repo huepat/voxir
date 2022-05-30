@@ -34,18 +34,48 @@ namespace HuePat.VoxIR.IO.PLY.Reading {
             CoordinateIndentifiers = ("x", "y", "z");
         }
 
+        public PointCloud ReadPointCloud(
+                string file,
+                bool createBBox = true,
+                bool useParallelForBBox = true) {
+
+            Header header;
+            PointCloud pointCloud;
+            IDecoder decoder;
+
+            using (InvariantCultureBlock block = new InvariantCultureBlock()) {
+
+                header = ReadHeader(file);
+                decoder = GetDecoder(header);
+
+                pointCloud = new PointCloud( 
+                    decoder.ReadPoints(
+                        file,
+                        header),
+                    createBBox,
+                    useParallelForBBox);
+            }
+
+            return pointCloud;
+        }
+
         public Mesh ReadMesh(
-                string file) {
+                string file,
+                bool createBBox = true,
+                bool useParallelForBBox = true) {
 
             Mesh mesh;
             Header header;
             IDecoder decoder;
 
             using (InvariantCultureBlock block = new InvariantCultureBlock()) {
+
                 header = ReadHeader(file);
                 decoder = GetDecoder(header);
                 mesh = decoder.ReadMesh(
                     InvertNormals,
+                    createBBox,
+                    useParallelForBBox,
                     file,
                     header);
             }
