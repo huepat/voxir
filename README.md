@@ -262,6 +262,8 @@ HuePat.VoxIR.Datasets.GroundTruth.TransferGroundTruthInfoToTestMesh(
   out int[] roomIdPerFace); // Array of room ids per face index of the original triangle mesh
 ```
 
+<span style="color:red">**Note (02.07.2022)**: There is a problem with this method which results in enormous processing times and faulty results. It will be debugged in due time.</span>
+
 The ground truth data transfered to the original triangle mesh can be visualizes via the following methods:
 
 Visualizes ramp space triangles in green and other triangles in red:
